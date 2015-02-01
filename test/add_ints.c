@@ -1,4 +1,4 @@
-#include "value.h"
+#include "../src/value.h"
 #include <assert.h>
 
 int main() {
