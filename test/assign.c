@@ -17,30 +17,17 @@ void assertVertexContent(Value* vertexValuePtr, char expectedPrimitive) {
 
 int main() {
   // Create four Value objects that will hold Vertices
-  Value aVertexVal;
-  Value bVertexVal;
-  Value cVertexVal;
-  Value dVertexVal;
-
-  // Create four Value objects whose data is a Vertex object
-  makeValue(&aVertexVal, 1, sizeof(Vertex));
-  makeValue(&bVertexVal, 1, sizeof(Vertex));
-  makeValue(&cVertexVal, 1, sizeof(Vertex));
-  makeValue(&dVertexVal, 1, sizeof(Vertex));
+  INIT_OBJ_VAL(aVertexVal, Vertex);
+  INIT_OBJ_VAL(bVertexVal, Vertex);
+  INIT_OBJ_VAL(cVertexVal, Vertex);
+  INIT_OBJ_VAL(dVertexVal, Vertex);
 
   // Create four Value objects that will hold
-  // the content of the Vertices
-  Value aVertexContentVal;
-  Value bVertexContentVal;
-  Value cVertexContentVal;
-  Value dVertexContentVal;
-
-  // Allocate a char of memory for the content
-  // Values' data pointers to point to
-  makeValue(&aVertexContentVal, 1, sizeof(char));
-  makeValue(&bVertexContentVal, 1, sizeof(char));
-  makeValue(&cVertexContentVal, 1, sizeof(char));
-  makeValue(&dVertexContentVal, 1, sizeof(char));
+  // the content of the Vertices, i.e. a char
+  INIT_PRIM_VAL(aVertexContentVal, char);
+  INIT_PRIM_VAL(bVertexContentVal, char);
+  INIT_PRIM_VAL(cVertexContentVal, char);
+  INIT_PRIM_VAL(dVertexContentVal, char);
 
   // Point the Verteces' content to the content Value
   DATA(&aVertexVal, Vertex).content = &aVertexContentVal;
