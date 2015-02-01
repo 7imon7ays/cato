@@ -2,13 +2,9 @@
 #include <assert.h>
 
 int main() {
-
-  Value aVal;
-  Value bVal;
-  Value sumVal;
-  makeValue(&aVal, 0, sizeof(int));
-  makeValue(&bVal, 0, sizeof(int));
-  makeValue(&sumVal, 0, sizeof(int));
+  INIT_PRIM_VAL(aVal, int);
+  INIT_PRIM_VAL(bVal, int);
+  INIT_PRIM_VAL(sumVal, int);
 
   DATA(&aVal, int) = 2;
   DATA(&bVal, int) = 3;

@@ -3,6 +3,15 @@
 
 // Macro to access a value struct's data
 // and cast it to a given type
+
+#define INIT_OBJ_VAL(identifier, type)\
+  Value identifier;\
+  makeValue(&(identifier), 1, sizeof(type));
+
+#define INIT_PRIM_VAL(identifier, type)\
+  Value identifier;\
+  makeValue(&(identifier), 0, sizeof(type));
+
 #define DATA(valPtr, type)\
   (*((type*) (valPtr)->dataPtr))
 
