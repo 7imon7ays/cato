@@ -17,35 +17,35 @@ void assertVertexContent(Value* vertexValuePtr, char expectedPrimitive) {
 
 int main() {
   // Create four Value objects that will hold Vertices
-  INIT_OBJ_VAL(aVertexVal, Vertex);
-  INIT_OBJ_VAL(bVertexVal, Vertex);
-  INIT_OBJ_VAL(cVertexVal, Vertex);
-  INIT_OBJ_VAL(dVertexVal, Vertex);
+  INIT_OBJ_VAL(aVertexValPtr, Vertex);
+  INIT_OBJ_VAL(bVertexValPtr, Vertex);
+  INIT_OBJ_VAL(cVertexValPtr, Vertex);
+  INIT_OBJ_VAL(dVertexValPtr, Vertex);
 
   // Create four Value objects that will hold
   // the content of the Vertices, i.e. a char
-  INIT_PRIM_VAL(aVertexContentVal, char);
-  INIT_PRIM_VAL(bVertexContentVal, char);
-  INIT_PRIM_VAL(cVertexContentVal, char);
-  INIT_PRIM_VAL(dVertexContentVal, char);
+  INIT_PRIM_VAL(aVertexContentValPtr, char);
+  INIT_PRIM_VAL(bVertexContentValPtr, char);
+  INIT_PRIM_VAL(cVertexContentValPtr, char);
+  INIT_PRIM_VAL(dVertexContentValPtr, char);
 
   // Point the Verteces' content to the content Value
-  DATA(&aVertexVal, Vertex).content = &aVertexContentVal;
-  DATA(&bVertexVal, Vertex).content = &bVertexContentVal;
-  DATA(&cVertexVal, Vertex).content = &cVertexContentVal;
-  DATA(&dVertexVal, Vertex).content = &dVertexContentVal;
+  DATA(aVertexValPtr, Vertex).content = aVertexContentValPtr;
+  DATA(bVertexValPtr, Vertex).content = bVertexContentValPtr;
+  DATA(cVertexValPtr, Vertex).content = cVertexContentValPtr;
+  DATA(dVertexValPtr, Vertex).content = dVertexContentValPtr;
 
   // Point the content Values' data pointers to
   // respective chars
-  DATA(&aVertexContentVal, char) = 'a';
-  DATA(&bVertexContentVal, char) = 'b';
-  DATA(&cVertexContentVal, char) = 'c';
-  DATA(&dVertexContentVal, char) = 'd';
+  DATA(aVertexContentValPtr, char) = 'a';
+  DATA(bVertexContentValPtr, char) = 'b';
+  DATA(cVertexContentValPtr, char) = 'c';
+  DATA(dVertexContentValPtr, char) = 'd';
 
-  assertVertexContent(&aVertexVal, 'a');
-  assertVertexContent(&bVertexVal, 'b');
-  assertVertexContent(&cVertexVal, 'c');
-  assertVertexContent(&dVertexVal, 'd');
+  assertVertexContent(aVertexValPtr, 'a');
+  assertVertexContent(bVertexValPtr, 'b');
+  assertVertexContent(cVertexValPtr, 'c');
+  assertVertexContent(dVertexValPtr, 'd');
 
   return 0;
 }
