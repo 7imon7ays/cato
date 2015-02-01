@@ -10,12 +10,11 @@ int main() {
   makeValue(&bVal, 0, sizeof(int));
   makeValue(&sumVal, 0, sizeof(int));
 
-  *((int *) aVal.dataPtr) = 2;
-  *((int *) bVal.dataPtr) = 3;
-  *((int *) sumVal.dataPtr) = *((int *) aVal.dataPtr) + *((int *) bVal.dataPtr);
+  DATA(&aVal, int) = 2;
+  DATA(&bVal, int) = 3;
+  DATA(&sumVal, int) = DATA(&aVal, int) + DATA(&bVal, int);
 
-
-  assert(*((int *) sumVal.dataPtr) == 5);
+  assert(DATA(&sumVal, int) == 5);
   return 0;
 }
 
