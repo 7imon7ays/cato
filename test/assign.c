@@ -8,9 +8,9 @@ typedef struct vertex {
 } Vertex;
 
 void assertVertexContent(Value* vertexValuePtr, char expectedPrimitive) {
-  Vertex* vertexPtr = (Vertex*) vertexValuePtr->dataPtr;
+  Vertex* vertexPtr = &(DATA(vertexValuePtr, Vertex));
   Value* contentValuePtr = vertexPtr->content;
-  char content = *((char *) contentValuePtr->dataPtr);
+  char content = DATA(contentValuePtr, char);
 
   assert(content == expectedPrimitive);
 }
@@ -43,17 +43,17 @@ int main() {
   makeValue(&dVertexContentVal, 1, sizeof(char));
 
   // Point the Verteces' content to the content Value
-  ((Vertex *) aVertexVal.dataPtr)->content = &aVertexContentVal;
-  ((Vertex *) bVertexVal.dataPtr)->content = &bVertexContentVal;
-  ((Vertex *) cVertexVal.dataPtr)->content = &cVertexContentVal;
-  ((Vertex *) dVertexVal.dataPtr)->content = &dVertexContentVal;
+  DATA(&aVertexVal, Vertex).content = &aVertexContentVal;
+  DATA(&bVertexVal, Vertex).content = &bVertexContentVal;
+  DATA(&cVertexVal, Vertex).content = &cVertexContentVal;
+  DATA(&dVertexVal, Vertex).content = &dVertexContentVal;
 
   // Point the content Values' data pointers to
   // respective chars
-  *((char *) aVertexContentVal.dataPtr) = 'a';
-  *((char *) bVertexContentVal.dataPtr) = 'b';
-  *((char *) cVertexContentVal.dataPtr) = 'c';
-  *((char *) dVertexContentVal.dataPtr) = 'd';
+  DATA(&aVertexContentVal, char) = 'a';
+  DATA(&bVertexContentVal, char) = 'b';
+  DATA(&cVertexContentVal, char) = 'c';
+  DATA(&dVertexContentVal, char) = 'd';
 
   assertVertexContent(&aVertexVal, 'a');
   assertVertexContent(&bVertexVal, 'b');

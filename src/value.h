@@ -4,7 +4,7 @@
 // Macro to access a value struct's data
 // and cast it to a given type
 #define DATA(valPtr, type)\
-  *((type*) (valPtr)->dataPtr)
+  (*((type*) (valPtr)->dataPtr))
 
 typedef struct {
   // Points to a primitive or an object (i.e. contiguous value addresses)
