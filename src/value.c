@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include "value.h"
 
-void makeValue(Value* valuePtr, bool isObject, size_t length) {
+ValueHeader* makeValue(bool isObject, size_t length) {
+  ValueHeader* valuePtr = malloc(sizeof(ValueHeader) + length);
   valuePtr->isObject = isObject;
   valuePtr->length = length;
-  valuePtr->dataPtr = malloc(length);
+
+  return valuePtr;
 };
 

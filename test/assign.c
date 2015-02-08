@@ -2,50 +2,39 @@
 #include "../src/value.h"
 
 typedef struct vertex {
-  Value* content;
-  Value* vp1;
-  Value* vp2;
+  Val content;
+  Val vertex1;
+  Val vertex2;
 } Vertex;
 
-void assertVertexContent(Value* vertexValuePtr, char expectedPrimitive) {
-  Vertex* vertexPtr = &(DATA(vertexValuePtr, Vertex));
-  Value* contentValuePtr = vertexPtr->content;
-  char content = DATA(contentValuePtr, char);
+void assertVertexContent(Val vertex, char expectedPrimitive) {
+  Val content = DATA(vertex, Vertex).content;
 
-  assert(content == expectedPrimitive);
+  assert(DATA(content, char) == expectedPrimitive);
 }
 
 int main() {
-  // Create four Value objects that will hold Vertices
-  INIT_OBJ_VAL(aVertexValPtr, Vertex);
-  INIT_OBJ_VAL(bVertexValPtr, Vertex);
-  INIT_OBJ_VAL(cVertexValPtr, Vertex);
-  INIT_OBJ_VAL(dVertexValPtr, Vertex);
+  // Init four vertices with char as content
+  Val aVertex = OBJ_VAL(Vertex, (Vertex) {
+    .content = PRIM_VAL(char, 'a')
+  });
 
-  // Create four Value objects that will hold
-  // the content of the Vertices, i.e. a char
-  INIT_PRIM_VAL(aVertexContentValPtr, char);
-  INIT_PRIM_VAL(bVertexContentValPtr, char);
-  INIT_PRIM_VAL(cVertexContentValPtr, char);
-  INIT_PRIM_VAL(dVertexContentValPtr, char);
+  Val bVertex = OBJ_VAL(Vertex, (Vertex) {
+    .content = PRIM_VAL(char, 'b')
+  });
 
-  // Point the Verteces' content to the content Value
-  DATA(aVertexValPtr, Vertex).content = aVertexContentValPtr;
-  DATA(bVertexValPtr, Vertex).content = bVertexContentValPtr;
-  DATA(cVertexValPtr, Vertex).content = cVertexContentValPtr;
-  DATA(dVertexValPtr, Vertex).content = dVertexContentValPtr;
+  Val cVertex = OBJ_VAL(Vertex, (Vertex) {
+    .content = PRIM_VAL(char, 'c')
+  });
 
-  // Point the content Values' data pointers to
-  // respective chars
-  DATA(aVertexContentValPtr, char) = 'a';
-  DATA(bVertexContentValPtr, char) = 'b';
-  DATA(cVertexContentValPtr, char) = 'c';
-  DATA(dVertexContentValPtr, char) = 'd';
+  Val dVertex = OBJ_VAL(Vertex, (Vertex) {
+    .content = PRIM_VAL(char, 'd')
+  });
 
-  assertVertexContent(aVertexValPtr, 'a');
-  assertVertexContent(bVertexValPtr, 'b');
-  assertVertexContent(cVertexValPtr, 'c');
-  assertVertexContent(dVertexValPtr, 'd');
+  assertVertexContent(aVertex, 'a');
+  assertVertexContent(bVertex, 'b');
+  assertVertexContent(cVertex, 'c');
+  assertVertexContent(dVertex, 'd');
 
   return 0;
 }

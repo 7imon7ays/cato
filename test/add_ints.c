@@ -2,15 +2,13 @@
 #include <assert.h>
 
 int main() {
-  INIT_PRIM_VAL(aValPtr, int);
-  INIT_PRIM_VAL(bValPtr, int);
-  INIT_PRIM_VAL(sumValPtr, int);
+  Val twoVal = PRIM_VAL(int, 2);
+  Val threeVal = PRIM_VAL(int, 3);
+  Val sumVal = MAKE_PRIM_VAL(int);
 
-  DATA(aValPtr, int) = 2;
-  DATA(bValPtr, int) = 3;
-  DATA(sumValPtr, int) = DATA(aValPtr, int) + DATA(bValPtr, int);
+  DATA(sumVal, int) = DATA(twoVal, int) + DATA(threeVal, int);
 
-  assert(DATA(sumValPtr, int) == 5);
+  assert(DATA(sumVal, int) == 5);
   return 0;
 }
 

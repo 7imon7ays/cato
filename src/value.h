@@ -2,28 +2,49 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-// Macro to access a value struct's data
+// Initialize object value header
+
+#define MAKE_OBJ_VAL(type)\
+  makeValue(1, sizeof(type));
+
+// Initialize primitive value header
+
+#define MAKE_PRIM_VAL(type)\
+  makeValue(0, sizeof(type));
+
+// Access a value header's data
 // and cast it to a given type
 
-#define INIT_OBJ_VAL(identifier, type)\
-  Value* identifier = malloc(sizeof(Value));\
-  makeValue(identifier, 1, sizeof(type));
-
-#define INIT_PRIM_VAL(identifier, type)\
-  Value* identifier = malloc(sizeof(Value));\
-  makeValue(identifier, 0, sizeof(type));
-
 #define DATA(valPtr, type)\
-  (*((type*) (valPtr)->dataPtr))
+  (*((type*) (((void *) valPtr) + sizeof(ValueHeader))))
+
+// Initialize and access a type
+// in one call
+// Use an arbitrary lexical block
+// (allowed in GCC)
+
+#define PRIM_VAL(type, data)\
+  ({\
+    Val val = MAKE_PRIM_VAL(type);\
+    DATA(val, type) = data;\
+    val;\
+  })
+
+#define OBJ_VAL(type, data)\
+  ({\
+    Val val = MAKE_OBJ_VAL(type);\
+    DATA(val, type) = data;\
+    val;\
+  })
 
 typedef struct {
-  // Points to a primitive or an object (i.e. contiguous value addresses)
-  void* dataPtr;
+  // How many bytes of data are stored after isObject
+  size_t length;
   // Data is object or primitive
   bool isObject;
-  // How many bytes dataPtr points to
-  size_t length;
-} Value;
+} ValueHeader;
 
-void makeValue(Value* valuePtr, bool isObject, size_t length);
+typedef ValueHeader* Val;
+
+ValueHeader* makeValue(bool isObject, size_t length);
 
