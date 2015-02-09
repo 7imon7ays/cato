@@ -1,17 +1,6 @@
 #include <assert.h>
 #include "../src/value.h"
-
-typedef struct vertex {
-  Val content;
-  Val vertex1;
-  Val vertex2;
-} Vertex;
-
-void assertVertexContent(Val vertex, char expectedPrimitive) {
-  Val content = DATA(vertex, Vertex).content;
-
-  assert(DATA(content, char) == expectedPrimitive);
-}
+#include "../src/vertex.h"
 
 int main() {
   // Init four vertices with char as content
