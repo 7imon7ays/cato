@@ -1,10 +1,10 @@
 # Cato
 
-A garbage collector in C.
+*Garbage delenda est.*
 
 ![Cato's Bust](https://classconnection.s3.amazonaws.com/801/flashcards/363801/jpg/cato1364004919780.jpg)
 
-## Summary
+## Cheney's Algorithm
 
 Cato is currently implemented using [Cheney's algorithm][cheney wiki]. Cheney's
 algorithm consists in allocating all objects in one arena. Once that arena
@@ -37,4 +37,12 @@ The following macros make Cato's values easier to manipulate.
     // Allocate and return a value holding composite data of the given type
     OBJ_VAL(type, data) 
 ```
+
+## Lessons Learned
+
+When incrementing a variable, always check whether it holds a pointer that
+could affect the size of the increment.
+
+GCC allows the creation of arbitrary scopes using curly braces. This is good
+for keeping variables private inside a macro.
 
