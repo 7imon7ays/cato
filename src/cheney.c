@@ -10,23 +10,9 @@
 // increment the new space pointer by the
 // size of the root val (header size + data length)
 void copyValAndIncrementFreeSpace(ValRef valRef, ValRef* newValSpacePtr) {
-  printf("\n");
-  if (valRef->isObject) {
-    printf("val is an object\n");
-  } else {
-    // Primitive seems to be garbage after the first
-    // iteration. Increment must be off.
-    printf("val holds the primitive: %c\n", DATA(valRef, char));
-  }
-
-  printf("its length is: %lu\n", valRef->length);
   size_t numBytes = valSize(valRef);
 
-  printf("copying val with %lu bytes \n", numBytes);
-  // Crashes here because length is garbage
   memcpy(*newValSpacePtr, valRef, numBytes);
-  printf("success\n");
-
   *newValSpacePtr = nextValRef(*newValSpacePtr);
 }
 
@@ -48,7 +34,6 @@ void copyChildren(ValRef parentRef, ValRef* newValSpacePtr) {
 
     currentChild++;
   }
-  printf("exited children copy loop\n");
 }
 
 // Cheney Collect:
@@ -64,9 +49,7 @@ void cheneyCollect(ValRef rootSet[], int length) {
   ValRef currentValRef = (ValRef) newValSpace;
 
   ValRef root = rootSet[0];
-  printf("starting root at address %p\n", root);
   copyValAndIncrementFreeSpace(root, &newValSpace);
-  printf("newValSpace after root is %p\n", newValSpace);
 
   while (currentValRef != newValSpace) {
     copyChildren(currentValRef, &newValSpace);

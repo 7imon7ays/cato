@@ -54,10 +54,9 @@ ValueHeader* makeValue(bool isObject, size_t length);
 
 size_t valSize(ValRef v);
 
+// Return next available address
+// after a value header and its content
 ValRef nextValRef(ValRef v);
-
-// for debugging
-void* data(ValRef valRef);
 
 #endif
 

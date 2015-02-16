@@ -5,8 +5,6 @@
 #include "../src/value.h"
 
 int main() {
-  // for debugging
-  Vertex v;
 
   ValRef c = OBJ_VAL(Vertex, ((Vertex) {
         .content = PRIM_VAL(int64_t, 'c'),
