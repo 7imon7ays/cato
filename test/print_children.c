@@ -5,16 +5,21 @@
 
 int main() {
   Val c = OBJ_VAL(Vertex, ((Vertex) {
-        .content = PRIM_VAL(char, 'c')
+        .content = PRIM_VAL(char, 'c'),
+        .left = NULL,
+        .right = NULL
       }));
 
   Val b = OBJ_VAL(Vertex, ((Vertex) {
-      .content = PRIM_VAL(char, 'b'),
-      .left = c
+        .content = PRIM_VAL(char, 'b'),
+        .left = c,
+        .right = NULL
       }));
 
   Val a = OBJ_VAL(Vertex, ((Vertex) {
-        .content = PRIM_VAL(char, 'a') 
+        .content = PRIM_VAL(char, 'a'),
+        .left = NULL,
+        .right = NULL
       }));
 
   Val root = OBJ_VAL(Vertex, ((Vertex) {
@@ -28,5 +33,4 @@ int main() {
 
   return 0;
 }
-
 
