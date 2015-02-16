@@ -1,10 +1,10 @@
 #include "../src/value.h"
 
 typedef struct vertex {
-  Val content;
-  Val left;
-  Val right;
+  ValRef content;
+  ValRef left;
+  ValRef right;
 } Vertex;
 
-void assertVertexContent(Val vertex, char expectedPrimitive);
+void assertVertexContent(ValRef vertexRef, char expectedPrimitive);
 

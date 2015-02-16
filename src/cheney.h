@@ -1,4 +1,4 @@
 #include "value.h"
 
-void cheneyCollect(Val rootSet[], int length);
+void cheneyCollect(ValRef rootSet[], int length);
 

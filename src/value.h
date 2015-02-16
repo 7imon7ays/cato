@@ -18,8 +18,8 @@
 // Access a value header's data
 // and cast it to a given type
 
-#define DATA(valPtr, type)\
-  (*((type*) (((void *) valPtr) + sizeof(ValueHeader))))
+#define DATA(valRef, type)\
+  (*((type*) (((void *) valRef) + sizeof(ValueHeader))))
 
 // Initialize and access a value in the same
 // call, using an arbitrary lexical block
@@ -28,16 +28,16 @@
 
 #define PRIM_VAL(type, data)\
   ({\
-    Val val = MAKE_PRIM_VAL(type);\
-    DATA(val, type) = (data);\
-    val;\
+    ValRef valRef = MAKE_PRIM_VAL(type);\
+    DATA(valRef, type) = (data);\
+    valRef;\
   })
 
 #define OBJ_VAL(type, data)\
   ({\
-    Val val = MAKE_OBJ_VAL(type);\
-    DATA(val, type) = (data);\
-    val;\
+    ValRef valRef = MAKE_OBJ_VAL(type);\
+    DATA(valRef , type) = (data);\
+    valRef;\
   })
 
 typedef struct {
@@ -48,9 +48,16 @@ typedef struct {
   bool wasVisited;
 } ValueHeader;
 
-typedef ValueHeader* Val;
+typedef ValueHeader* ValRef;
 
 ValueHeader* makeValue(bool isObject, size_t length);
+
+size_t valSize(ValRef v);
+
+ValRef nextValRef(ValRef v);
+
+// for debugging
+void* data(ValRef valRef);
 
 #endif
 

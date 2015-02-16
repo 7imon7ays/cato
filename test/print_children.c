@@ -1,29 +1,33 @@
 #include <stdio.h>
+#include <stdint.h>
 #include "../src/cheney.h"
 #include "../src/vertex.h"
 #include "../src/value.h"
 
 int main() {
-  Val c = OBJ_VAL(Vertex, ((Vertex) {
-        .content = PRIM_VAL(char, 'c'),
+  // for debugging
+  Vertex v;
+
+  ValRef c = OBJ_VAL(Vertex, ((Vertex) {
+        .content = PRIM_VAL(int64_t, 'c'),
         .left = NULL,
         .right = NULL
       }));
 
-  Val b = OBJ_VAL(Vertex, ((Vertex) {
-        .content = PRIM_VAL(char, 'b'),
+  ValRef b = OBJ_VAL(Vertex, ((Vertex) {
+        .content = PRIM_VAL(int64_t, 'b'),
         .left = c,
         .right = NULL
       }));
 
-  Val a = OBJ_VAL(Vertex, ((Vertex) {
-        .content = PRIM_VAL(char, 'a'),
+  ValRef a = OBJ_VAL(Vertex, ((Vertex) {
+        .content = PRIM_VAL(int64_t, 'a'),
         .left = NULL,
         .right = NULL
       }));
 
-  Val root = OBJ_VAL(Vertex, ((Vertex) {
-        .content = PRIM_VAL(char, 'r'),
+  ValRef root = OBJ_VAL(Vertex, ((Vertex) {
+        .content = PRIM_VAL(int64_t, 'r'),
         .left = b,
         .right = a
       }));

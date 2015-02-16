@@ -6,74 +6,71 @@
 
 #define HEAP_SIZE 8000000
 
-size_t valSize(Val v) {
-  return sizeof(ValueHeader) + v->length;
-}
-
 // Copy the root val to the new space and
 // increment the new space pointer by the
 // size of the root val (header size + data length)
-void copyValAndIncrementFreeSpace(Val val, Val** newValSpacePtr) {
+void copyValAndIncrementFreeSpace(ValRef valRef, ValRef* newValSpacePtr) {
   printf("\n");
-  if (val->isObject) {
+  if (valRef->isObject) {
     printf("val is an object\n");
   } else {
     // Primitive seems to be garbage after the first
     // iteration. Increment must be off.
-    printf("val holds the primitive: %c\n", DATA(val, char));
+    printf("val holds the primitive: %c\n", DATA(valRef, char));
   }
 
-  printf("its length is: %lu\n", val->length);
-  size_t numBytes = valSize(val);
+  printf("its length is: %lu\n", valRef->length);
+  size_t numBytes = valSize(valRef);
 
   printf("copying val with %lu bytes \n", numBytes);
   // Crashes here because length is garbage
-  memcpy(*newValSpacePtr, val, numBytes);
+  memcpy(*newValSpacePtr, valRef, numBytes);
   printf("success\n");
 
-  *newValSpacePtr = ((void*) *newValSpacePtr) + numBytes;
+  *newValSpacePtr = nextValRef(*newValSpacePtr);
 }
 
-void copyChildren(Val parent, Val** newValSpacePtr) {
-  if (!parent->isObject) {
-    printf("reached leaf %c\n", DATA(parent, char));
+void copyChildren(ValRef parentRef, ValRef* newValSpacePtr) {
+  if (!parentRef->isObject) {
+    printf("reached leaf %c\n", DATA(parentRef, char));
     return;
   }
 
-  Val* currentChild = ((void*) parent) + sizeof(ValueHeader);
-  Val* terminalPtr = ((void*) parent) + valSize(parent);
+  ValRef* currentChild = ((void*) parentRef) + sizeof(ValueHeader);
+  ValRef* terminalPtr = ((void*) parentRef) + valSize(parentRef);
 
   while (currentChild != terminalPtr) {
-    // Skip null children
-    if (!*currentChild) {
-      continue;
+    if (*currentChild) {
+      copyValAndIncrementFreeSpace(*currentChild, newValSpacePtr);
+    } else {
+      // Skip null children
     }
 
-    copyValAndIncrementFreeSpace(*currentChild, newValSpacePtr);
-    currentChild += sizeof(Val);
+    currentChild++;
   }
+  printf("exited children copy loop\n");
 }
 
 // Cheney Collect:
 // Allocate a new heap. Copy into it the root
 // set of objects, along with any objects they
 // refer to directly or indirectly
-void cheneyCollect(Val rootSet[], int length) {
+void cheneyCollect(ValRef rootSet[], int length) {
   assert(length == 1);
   // Allocate the new arena and
   // keep a pointer to its next
   // available space
-  Val* newValSpace = malloc(HEAP_SIZE);
-  Val* currentValPtr = newValSpace;
+  ValRef newValSpace = malloc(HEAP_SIZE);
+  ValRef currentValRef = (ValRef) newValSpace;
 
-  Val root = rootSet[0];
+  ValRef root = rootSet[0];
   printf("starting root at address %p\n", root);
   copyValAndIncrementFreeSpace(root, &newValSpace);
   printf("newValSpace after root is %p\n", newValSpace);
 
-  while (currentValPtr != newValSpace) {
-    copyChildren(*currentValPtr, &newValSpace);
-    currentValPtr++;
+  while (currentValRef != newValSpace) {
+    copyChildren(currentValRef, &newValSpace);
+    currentValRef = nextValRef(currentValRef);
   }
 }
 
