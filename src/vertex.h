@@ -1,3 +1,6 @@
+#ifndef VERTEX_H
+#define VERTEX_H
+
 #include "../src/value.h"
 
 typedef struct vertex {
@@ -6,5 +9,7 @@ typedef struct vertex {
   ValRef right;
 } Vertex;
 
-void assertVertexContent(ValRef vertexRef, char expectedPrimitive);
+void assertVertexContent(ValRef vertex, char expectedPrimitive);
+
+#endif /* VERTEX_H */
 

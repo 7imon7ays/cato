@@ -3,23 +3,28 @@
 #include "value.h"
 
 ValueHeader* makeValue(bool isObject, size_t length) {
-  ValueHeader* valuePtr = malloc(sizeof(ValueHeader) + length);
-  valuePtr->isObject = isObject;
-  valuePtr->length = length;
-  valuePtr->wasVisited = false;
+  // Round up the length to multiple of ValueHeader's alignment requirement
+  // i.e. 8
+  size_t alignmentReq = __alignof(ValueHeader);
+  length = ((length + 7) / alignmentReq) * alignmentReq;
 
-  return valuePtr;
+  ValueHeader* valRef = malloc(sizeof(ValueHeader) + length);
+  valRef->isObject = isObject;
+  valRef->length = length;
+  valRef->wasVisited = false;
+
+  return valRef;
 };
 
 void* data(ValRef valRef) {
   return ((void *) valRef) + sizeof(ValueHeader);
 }
 
-size_t valSize(ValRef v) {
-  return sizeof(ValueHeader) + v->length;
+size_t valSize(ValRef valRef) {
+  return sizeof(ValueHeader) + valRef->length;
 }
 
-ValRef nextValRef(ValRef v) {
-  return ((ValRef) ((void *) v) + valSize(v));
+ValRef nextValRef(ValRef valRef) {
+  return ((ValRef) ((void *) valRef) + valSize(valRef));
 }
 

@@ -5,58 +5,46 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-// Initialize object value header
-
-#define MAKE_OBJ_VAL(type)\
-  makeValue(true, sizeof(type));
-
-// Initialize primitive value header
-
-#define MAKE_PRIM_VAL(type)\
-  makeValue(false, sizeof(type));
-
-// Access a value header's data
-// and cast it to a given type
-
-#define DATA(valRef, type)\
-  (*((type*) (((void *) valRef) + sizeof(ValueHeader))))
-
-// Initialize and access a value in the same
-// call, using an arbitrary lexical block
-// to hide the temporary variable
-// (allowed in gcc)
-
-#define PRIM_VAL(type, data)\
-  ({\
-    ValRef valRef = MAKE_PRIM_VAL(type);\
-    DATA(valRef, type) = (data);\
-    valRef;\
-  })
-
-#define OBJ_VAL(type, data)\
-  ({\
-    ValRef valRef = MAKE_OBJ_VAL(type);\
-    DATA(valRef , type) = (data);\
-    valRef;\
-  })
-
 typedef struct {
-  // How many bytes of data are stored after isObject
+  // How many bytes of data are stored after isObject.
   size_t length;
-  // Data is object or primitive
+  // Data is object or primitive.
   bool isObject;
   bool wasVisited;
 } ValueHeader;
 
 typedef ValueHeader* ValRef;
 
+// Access a value header's data and cast it to a given type.
+#define DATA(valRef, type)\
+  (*((type*) (((void *) valRef) + sizeof(ValueHeader))))
+
+// Initialize and access a value in the same call, using an arbitrary lexical
+// block to hide the temporary variable (allowed in gcc).
+#define PRIM_VAL(type, data)\
+  ({\
+    ValRef valRef = makeValue(false, sizeof(type));\
+    DATA(valRef, type) = (data);\
+    valRef;\
+  })
+
+#define OBJ_VAL(type, data)\
+  ({\
+    ValRef valRef = makeValue(true, sizeof(type));\
+    DATA(valRef , type) = (data);\
+    valRef;\
+  })
+
+// Heap allocate a Value, setting up the ValueHeader and allowing enough space
+// for the content.
 ValueHeader* makeValue(bool isObject, size_t length);
 
-size_t valSize(ValRef v);
+// Values are type-puns. Their size is sizeof ValueHeader + the length declared
+// in their header (lenght is implicitely multiplied by the size of a pointer).
+size_t valSize(ValRef valRef);
 
-// Return next available address
-// after a value header and its content
-ValRef nextValRef(ValRef v);
+// Return next available address after a value header and its content.
+ValRef nextValRef(ValRef valRef);
 
-#endif
+#endif /* VALUE_H */
 

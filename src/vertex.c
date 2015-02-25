@@ -1,8 +1,8 @@
 #include <assert.h>
 #include "vertex.h"
 
-void assertVertexContent(ValRef vertexRef, char expectedPrimitive) {
-  ValRef content = DATA(vertexRef, Vertex).content;
+void assertVertexContent(ValRef vertex, char expectedPrimitive) {
+  ValRef content = DATA(vertex, Vertex).content;
 
   assert(DATA(content, char) == expectedPrimitive);
 }

@@ -1,22 +1,25 @@
+#include <assert.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
 #include "cheney.h"
 #include "vertex.h"
-#include <string.h>
-#include <assert.h>
-#include <stdio.h>
 
 #define HEAP_SIZE 8000000
 
-// Copy the root val to the new space and
-// increment the new space pointer by the
-// size of the root val (header size + data length)
-void copyValAndIncrementFreeSpace(ValRef valRef, ValRef* newValSpacePtr) {
+// Copy the root val to the new space and increment the new space pointer by
+// the size of the root val (header size + data length).
+void copyValAndIncrementFreeSpace(ValRef valRef, ValRef* nextEmptyValAddressPtr) {
   size_t numBytes = valSize(valRef);
+  memcpy(*nextEmptyValAddressPtr, valRef, numBytes);
 
-  memcpy(*newValSpacePtr, valRef, numBytes);
-  *newValSpacePtr = nextValRef(*newValSpacePtr);
+  (*nextEmptyValAddressPtr)->wasVisited = false;
+  valRef->wasVisited = true;
+
+  *nextEmptyValAddressPtr = nextValRef(*nextEmptyValAddressPtr);
 }
 
-void copyChildren(ValRef parentRef, ValRef* newValSpacePtr) {
+void copyChildren(ValRef parentRef, ValRef* nextEmptyValAddressPtr) {
   if (!parentRef->isObject) {
     printf("reached leaf %c\n", DATA(parentRef, char));
     return;
@@ -24,12 +27,14 @@ void copyChildren(ValRef parentRef, ValRef* newValSpacePtr) {
 
   ValRef* currentChild = ((void*) parentRef) + sizeof(ValueHeader);
   ValRef* terminalPtr = ((void*) parentRef) + valSize(parentRef);
+  bool currentChildExistsAndIsNotVisited;
 
   while (currentChild != terminalPtr) {
-    if (*currentChild) {
-      copyValAndIncrementFreeSpace(*currentChild, newValSpacePtr);
+    currentChildExistsAndIsNotVisited = *currentChild && !(*currentChild)->wasVisited;
+    if (currentChildExistsAndIsNotVisited) {
+      copyValAndIncrementFreeSpace(*currentChild, nextEmptyValAddressPtr);
     } else {
-      // Skip null children
+      // Skip null or already-visited children.
     }
 
     currentChild++;
@@ -37,22 +42,22 @@ void copyChildren(ValRef parentRef, ValRef* newValSpacePtr) {
 }
 
 // Cheney Collect:
-// Allocate a new heap. Copy into it the root
-// set of objects, along with any objects they
-// refer to directly or indirectly
+// Allocate a new heap. Copy into it the root set of objects, along with any
+// objects they refer to directly or indirectly.
 void cheneyCollect(ValRef rootSet[], int length) {
   assert(length == 1);
-  // Allocate the new arena and
-  // keep a pointer to its next
-  // available space
-  ValRef newValSpace = malloc(HEAP_SIZE);
-  ValRef currentValRef = (ValRef) newValSpace;
+  // Allocate the new arena and keep a pointer to its next available space.
+  ValRef nextEmptyValAddress = malloc(HEAP_SIZE);
+  ValRef currentValRef = nextEmptyValAddress;
 
   ValRef root = rootSet[0];
-  copyValAndIncrementFreeSpace(root, &newValSpace);
 
-  while (currentValRef != newValSpace) {
-    copyChildren(currentValRef, &newValSpace);
+  for (int i = 0; i < length; i++) {
+    copyValAndIncrementFreeSpace(rootSet[i], &nextEmptyValAddress);
+  }
+
+  while (currentValRef != nextEmptyValAddress) {
+    copyChildren(currentValRef, &nextEmptyValAddress);
     currentValRef = nextValRef(currentValRef);
   }
 }
