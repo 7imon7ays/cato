@@ -21,6 +21,7 @@ ValRef copyVal(ValRef valRef) {
   valRef->wasVisited = true;
 
   ValRef newValRef = currentPos;
+  valRef->newPosition = newValRef;
   currentPos = nextValRef(currentPos);
 
   return newValRef;
@@ -32,20 +33,22 @@ void copyChildren(ValRef parentRef) {
     return;
   }
 
-  ValRef* currentChild = ((void*) parentRef) + sizeof(ValueHeader);
+  ValRef* currentChildPtr = ((void*) parentRef) + sizeof(ValueHeader);
   ValRef* terminalPtr = ((void*) parentRef) + valSize(parentRef);
   bool currentChildExistsAndIsNotVisited;
 
-  while (currentChild != terminalPtr) {
-    currentChildExistsAndIsNotVisited = *currentChild && !(*currentChild)->wasVisited;
-    if (currentChildExistsAndIsNotVisited) {
+  while (currentChildPtr != terminalPtr) {
+    if (!(*currentChildPtr)) {
+      // Skip pointer to null
+    } else if (!(*currentChildPtr)->wasVisited) {
       // Copy the child and update its reference.
-      *currentChild = copyVal(*currentChild);
+      *currentChildPtr = copyVal(*currentChildPtr);
     } else {
-      // Skip null or already-visited children.
+      // Update the reference to the child if it was moved.
+      *currentChildPtr = (*currentChildPtr)->newPosition;
     }
 
-    currentChild++;
+    currentChildPtr++;
   }
 }
 
@@ -80,7 +83,6 @@ ValRef cheneyMalloc(size_t size) {
   void* heapLimit = ((void *) fromSpace) + HEAP_SIZE;
   // Exit for now when fromSpace runs out.
   if (newBufferPosition > heapLimit) {
-    // Exit for now
     exit(1);
   }
 

@@ -21,7 +21,7 @@ int main() {
   ValRef a = OBJ_VAL(Vertex, ((Vertex) {
         .content = PRIM_VAL(char, 'a'),
         .left = NULL,
-        .right = NULL
+        .right = c
       }));
 
   ValRef root = OBJ_VAL(Vertex, ((Vertex) {
@@ -30,7 +30,9 @@ int main() {
         .right = a
       }));
 
-
+  // Create a cycle in the graph to test that child values are only copied
+  // once.
+  DATA(c, Vertex).left = root;
   cheneyCollect(&root, 1);
 
   return 0;
