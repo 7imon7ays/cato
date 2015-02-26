@@ -7,19 +7,23 @@
 
 #define HEAP_SIZE 8000000
 
+ValRef toSpace = 0;
+ValRef fromSpace = 0;
+ValRef currentPos = 0;
+
 // Copy the root val to the new space and increment the new space pointer by
 // the size of the root val (header size + data length).
-void copyValAndIncrementFreeSpace(ValRef valRef, ValRef* nextEmptyValAddressPtr) {
+void copyVal(ValRef valRef) {
   size_t numBytes = valSize(valRef);
-  memcpy(*nextEmptyValAddressPtr, valRef, numBytes);
+  memcpy(currentPos, valRef, numBytes);
 
-  (*nextEmptyValAddressPtr)->wasVisited = false;
+  currentPos->wasVisited = false;
   valRef->wasVisited = true;
 
-  *nextEmptyValAddressPtr = nextValRef(*nextEmptyValAddressPtr);
+  currentPos = nextValRef(currentPos);
 }
 
-void copyChildren(ValRef parentRef, ValRef* nextEmptyValAddressPtr) {
+void copyChildren(ValRef parentRef) {
   if (!parentRef->isObject) {
     printf("reached leaf %c\n", DATA(parentRef, char));
     return;
@@ -32,7 +36,7 @@ void copyChildren(ValRef parentRef, ValRef* nextEmptyValAddressPtr) {
   while (currentChild != terminalPtr) {
     currentChildExistsAndIsNotVisited = *currentChild && !(*currentChild)->wasVisited;
     if (currentChildExistsAndIsNotVisited) {
-      copyValAndIncrementFreeSpace(*currentChild, nextEmptyValAddressPtr);
+      copyVal(*currentChild);
     } else {
       // Skip null or already-visited children.
     }
@@ -41,24 +45,44 @@ void copyChildren(ValRef parentRef, ValRef* nextEmptyValAddressPtr) {
   }
 }
 
-// Cheney Collect:
-// Allocate a new heap. Copy into it the root set of objects, along with any
-// objects they refer to directly or indirectly.
-void cheneyCollect(ValRef rootSet[], int length) {
-  assert(length == 1);
-  // Allocate the new arena and keep a pointer to its next available space.
-  ValRef nextEmptyValAddress = malloc(HEAP_SIZE);
-  ValRef currentValRef = nextEmptyValAddress;
+void initCheneyCollect() {
+  toSpace = malloc(HEAP_SIZE);
+  fromSpace = malloc(HEAP_SIZE);
+  currentPos = fromSpace;
+}
 
-  ValRef root = rootSet[0];
+void cheneyCollect(ValRef rootSet[], int length) {
+  // Reset current position to the start of toSpace; increment it as values are
+  // copied over.
+  currentPos = toSpace;
+  ValRef currentValRef = currentPos;
 
   for (int i = 0; i < length; i++) {
-    copyValAndIncrementFreeSpace(rootSet[i], &nextEmptyValAddress);
+    copyVal(rootSet[i]);
   }
 
-  while (currentValRef != nextEmptyValAddress) {
-    copyChildren(currentValRef, &nextEmptyValAddress);
+  while (currentValRef != currentPos) {
+    copyChildren(currentValRef);
     currentValRef = nextValRef(currentValRef);
   }
+
+  ValRef temp = toSpace;
+  toSpace = fromSpace;
+  fromSpace = toSpace;
+}
+
+ValRef cheneyMalloc(size_t size) {
+  void* newBufferPosition = ((void *) currentPos) + size;
+  void* heapLimit = ((void *) fromSpace) + HEAP_SIZE;
+  // Exit for now when fromSpace runs out.
+  if (newBufferPosition > heapLimit) {
+    // Exit for now
+    exit(1);
+  }
+
+  ValRef valRef = currentPos;
+  currentPos = ((void *) currentPos) + size;
+
+  return valRef;
 }
 

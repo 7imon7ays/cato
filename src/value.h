@@ -46,5 +46,8 @@ size_t valSize(ValRef valRef);
 // Return next available address after a value header and its content.
 ValRef nextValRef(ValRef valRef);
 
+// Allocate valRefs on fromSpace and increment pointer to next space.
+ValRef cheneyMalloc(size_t size);
+
 #endif /* VALUE_H */
 
