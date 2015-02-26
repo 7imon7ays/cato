@@ -11,16 +11,19 @@ ValRef toSpace = 0;
 ValRef fromSpace = 0;
 ValRef currentPos = 0;
 
-// Copy the root val to the new space and increment the new space pointer by
-// the size of the root val (header size + data length).
-void copyVal(ValRef valRef) {
+// Copy a val to the toSpace and increment the new space pointer by the size of
+// that val (header size + data length). Return the val's new position.
+ValRef copyVal(ValRef valRef) {
   size_t numBytes = valSize(valRef);
   memcpy(currentPos, valRef, numBytes);
 
   currentPos->wasVisited = false;
   valRef->wasVisited = true;
 
+  ValRef newValRef = currentPos;
   currentPos = nextValRef(currentPos);
+
+  return newValRef;
 }
 
 void copyChildren(ValRef parentRef) {
@@ -36,7 +39,8 @@ void copyChildren(ValRef parentRef) {
   while (currentChild != terminalPtr) {
     currentChildExistsAndIsNotVisited = *currentChild && !(*currentChild)->wasVisited;
     if (currentChildExistsAndIsNotVisited) {
-      copyVal(*currentChild);
+      // Copy the child and update its reference.
+      *currentChild = copyVal(*currentChild);
     } else {
       // Skip null or already-visited children.
     }
