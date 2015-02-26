@@ -6,7 +6,7 @@ ValueHeader* makeValue(bool isObject, size_t length) {
   // Round up the length to multiple of ValueHeader's alignment requirement
   // i.e. 8
   size_t alignmentReq = __alignof(ValueHeader);
-  length = ((length + 7) / alignmentReq) * alignmentReq;
+  length = ((length + alignmentReq - 1) / alignmentReq) * alignmentReq;
 
   ValueHeader* valRef = malloc(sizeof(ValueHeader) + length);
   valRef->isObject = isObject;
