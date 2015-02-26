@@ -62,7 +62,7 @@ void cheneyCollect(ValRef rootSet[], int length) {
   ValRef currentValRef = currentPos;
 
   for (int i = 0; i < length; i++) {
-    copyVal(rootSet[i]);
+    rootSet[i] = copyVal(rootSet[i]);
   }
 
   while (currentValRef != currentPos) {
