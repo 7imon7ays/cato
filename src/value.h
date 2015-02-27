@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 typedef struct ValueHeader {
-  // Where to find the copied value after it was moved
+  // Where to find the copied value after it was moved.
   struct ValueHeader* newPosition;
   // How many bytes of data are stored after isObject.
   size_t length;
