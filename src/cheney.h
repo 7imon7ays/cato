@@ -3,7 +3,6 @@
 
 #include "value.h"
 
-// Cheney Collect:
 // Allocate a new heap. Copy into it the root set of objects, along
 // with any objects they refer to directly or indirectly.
 void cheneyCollect(ValRef rootSet[], int length);
