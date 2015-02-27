@@ -11,18 +11,17 @@ ValRef toSpace = 0;
 ValRef fromSpace = 0;
 ValRef currentPos = 0;
 
-// Copy a val to the toSpace and increment the new space pointer by the size of
-// that val (header size + data length). Return the val's new position.
+// Copy a val to the toSpace and increment the new space pointer by
+// the size of that val (header size + data length). Return the val's
+// new position.
 ValRef copyVal(ValRef valRef) {
   size_t numBytes = valSize(valRef);
-  memcpy(currentPos, valRef, numBytes);
-
-  currentPos->wasVisited = false;
-  valRef->wasVisited = true;
-
   ValRef newValRef = currentPos;
-  valRef->newPosition = newValRef;
-  currentPos = nextValRef(currentPos);
+  memcpy(newValRef, valRef, numBytes);
+  currentPos = nextValRef(newValRef);
+
+  newValRef->wasVisited = false;
+  valRef->wasVisited = true;
 
   return newValRef;
 }
@@ -33,22 +32,20 @@ void copyChildren(ValRef parentRef) {
     return;
   }
 
-  ValRef* currentChildPtr = ((void*) parentRef) + sizeof(ValueHeader);
-  ValRef* terminalPtr = ((void*) parentRef) + valSize(parentRef);
-  bool currentChildExistsAndIsNotVisited;
+  ValRef* childRefs = ((void*) parentRef) + sizeof(ValueHeader);
+  int numChildren = parentRef->length / sizeof(ValRef);
 
-  while (currentChildPtr != terminalPtr) {
-    if (!(*currentChildPtr)) {
-      // Skip pointer to null
-    } else if (!(*currentChildPtr)->wasVisited) {
-      // Copy the child and update its reference.
-      *currentChildPtr = copyVal(*currentChildPtr);
+  for (int i = 0; i < numChildren; i++) {
+    if (!childRefs[i]) {
+      // Skip null reference.
+    } else if ((childRefs[i])->wasVisited) {
+      // Child was already moved. Update the reference with the
+      // forwarding pointer left behind.
+      childRefs[i] = (childRefs[i])->newPosition;
     } else {
-      // Update the reference to the child if it was moved.
-      *currentChildPtr = (*currentChildPtr)->newPosition;
+      // Copy the child and update its reference.
+      childRefs[i] = copyVal(childRefs[i]);
     }
-
-    currentChildPtr++;
   }
 }
 
@@ -59,8 +56,8 @@ void initCheneyCollect() {
 }
 
 void cheneyCollect(ValRef rootSet[], int length) {
-  // Reset current position to the start of toSpace; increment it as values are
-  // copied over.
+  // Reset current position to the start of toSpace; increment it as
+  // values are copied over.
   currentPos = toSpace;
   ValRef currentValRef = currentPos;
 
@@ -91,4 +88,3 @@ ValRef cheneyMalloc(size_t size) {
 
   return valRef;
 }
-

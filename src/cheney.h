@@ -3,13 +3,15 @@
 
 #include "value.h"
 
-// Cheney Collect:
-// Allocate a new heap. Copy into it the root set of objects, along with any
-// objects they refer to directly or indirectly.
+// Allocate a new heap. Copy into it the root set of objects, along
+// with any objects they refer to directly or indirectly.
 void cheneyCollect(ValRef rootSet[], int length);
 
-// Allocate toSpace, fromSpace, and a pointer to the start of fromSpace.
+// Allocate toSpace, fromSpace, and a pointer to the start of
+// fromSpace.
 void initCheneyCollect();
 
-#endif /* CHENEY_H */
+// Allocate valRefs on fromSpace and increment pointer to next space.
+ValRef cheneyMalloc(size_t size);
 
+#endif /* CHENEY_H */

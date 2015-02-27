@@ -11,4 +11,3 @@ int main() {
   assert(DATA(sumVal, int) == 5);
   return 0;
 }
-

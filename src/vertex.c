@@ -6,4 +6,3 @@ void assertVertexContent(ValRef vertex, char expectedPrimitive) {
 
   assert(DATA(content, char) == expectedPrimitive);
 }
-
