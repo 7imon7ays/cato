@@ -11,8 +11,9 @@ ValRef toSpace = 0;
 ValRef fromSpace = 0;
 ValRef currentPos = 0;
 
-// Copy a val to the toSpace and increment the new space pointer by the size of
-// that val (header size + data length). Return the val's new position.
+// Copy a val to the toSpace and increment the new space pointer by
+// the size of that val (header size + data length). Return the val's
+// new position.
 ValRef copyVal(ValRef valRef) {
   size_t numBytes = valSize(valRef);
   memcpy(currentPos, valRef, numBytes);
@@ -59,8 +60,8 @@ void initCheneyCollect() {
 }
 
 void cheneyCollect(ValRef rootSet[], int length) {
-  // Reset current position to the start of toSpace; increment it as values are
-  // copied over.
+  // Reset current position to the start of toSpace; increment it as
+  // values are copied over.
   currentPos = toSpace;
   ValRef currentValRef = currentPos;
 

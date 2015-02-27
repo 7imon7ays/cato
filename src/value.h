@@ -21,8 +21,8 @@ typedef ValueHeader* ValRef;
 #define DATA(valRef, type)                                      \
   (*((type*) (((void *) valRef) + sizeof(ValueHeader))))
 
-// Initialize and access a value in the same call, using an arbitrary lexical
-// block to hide the temporary variable (allowed in gcc).
+// Initialize and access a value in the same call, using an arbitrary
+// lexical block to hide the temporary variable (allowed in gcc).
 #define PRIM_VAL(type, data)                            \
   ({                                                    \
     ValRef valRef = makeValue(false, sizeof(type));     \
@@ -37,12 +37,13 @@ typedef ValueHeader* ValRef;
     valRef;                                             \
   })
 
-// Heap allocate a Value, setting up the ValueHeader and allowing enough space
-// for the content.
+// Heap allocate a Value, setting up the ValueHeader and allowing
+// enough space for the content.
 ValueHeader* makeValue(bool isObject, size_t length);
 
-// Values are type-puns. Their size is sizeof ValueHeader + the length declared
-// in their header (lenght is implicitely multiplied by the size of a pointer).
+// Values are type-puns. Their size is sizeof ValueHeader + the length
+// declared in their header (lenght is implicitely multiplied by the
+// size of a pointer).
 size_t valSize(ValRef valRef);
 
 // Return next available address after a value header and its content.
