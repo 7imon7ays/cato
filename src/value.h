@@ -42,7 +42,7 @@ typedef ValueHeader* ValRef;
 ValueHeader* makeValue(bool isObject, size_t length);
 
 // Values are type-puns. Their size is sizeof ValueHeader + the length
-// declared in their header (lenght is implicitely multiplied by the
+// declared in their header (length is implicitly multiplied by the
 // size of a pointer).
 size_t valSize(ValRef valRef);
 
