@@ -16,14 +16,12 @@ ValRef currentPos = 0;
 // new position.
 ValRef copyVal(ValRef valRef) {
   size_t numBytes = valSize(valRef);
-  memcpy(currentPos, valRef, numBytes);
-
-  currentPos->wasVisited = false;
-  valRef->wasVisited = true;
-
   ValRef newValRef = currentPos;
-  valRef->newPosition = newValRef;
-  currentPos = nextValRef(currentPos);
+  memcpy(newValRef, valRef, numBytes);
+  currentPos = nextValRef(newValRef);
+
+  newValRef->wasVisited = false;
+  valRef->wasVisited = true;
 
   return newValRef;
 }
