@@ -12,4 +12,3 @@ void cheneyCollect(ValRef rootSet[], int length);
 void initCheneyCollect();
 
 #endif /* CHENEY_H */
-

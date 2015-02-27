@@ -52,4 +52,3 @@ ValRef nextValRef(ValRef valRef);
 ValRef cheneyMalloc(size_t size);
 
 #endif /* VALUE_H */
-
