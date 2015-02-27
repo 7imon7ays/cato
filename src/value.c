@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "value.h"
 
 ValueHeader* makeValue(bool isObject, size_t length) {
