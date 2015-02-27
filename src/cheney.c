@@ -32,21 +32,20 @@ void copyChildren(ValRef parentRef) {
     return;
   }
 
-  ValRef* currentChildPtr = ((void*) parentRef) + sizeof(ValueHeader);
-  ValRef* terminalPtr = ((void*) parentRef) + valSize(parentRef);
+  ValRef* childRefs = ((void*) parentRef) + sizeof(ValueHeader);
+  int numChildren = parentRef->length / sizeof(ValRef);
 
-  while (currentChildPtr != terminalPtr) {
-    if (!(*currentChildPtr)) {
-      // Skip pointer to null
-    } else if (!(*currentChildPtr)->wasVisited) {
-      // Copy the child and update its reference.
-      *currentChildPtr = copyVal(*currentChildPtr);
+  for (int i = 0; i < numChildren; i++) {
+    if (!childRefs[i]) {
+      // Skip null reference.
+    } else if ((childRefs[i])->wasVisited) {
+      // Child was already moved. Update the reference with the
+      // forwarding pointer left behind.
+      childRefs[i] = (childRefs[i])->newPosition;
     } else {
-      // Update the reference to the child if it was moved.
-      *currentChildPtr = (*currentChildPtr)->newPosition;
+      // Copy the child and update its reference.
+      childRefs[i] = copyVal(childRefs[i]);
     }
-
-    currentChildPtr++;
   }
 }
 
