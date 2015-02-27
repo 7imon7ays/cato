@@ -18,23 +18,23 @@ typedef struct ValueHeader {
 typedef ValueHeader* ValRef;
 
 // Access a value header's data and cast it to a given type.
-#define DATA(valRef, type)\
+#define DATA(valRef, type)                                      \
   (*((type*) (((void *) valRef) + sizeof(ValueHeader))))
 
 // Initialize and access a value in the same call, using an arbitrary lexical
 // block to hide the temporary variable (allowed in gcc).
-#define PRIM_VAL(type, data)\
-  ({\
-    ValRef valRef = makeValue(false, sizeof(type));\
-    DATA(valRef, type) = (data);\
-    valRef;\
+#define PRIM_VAL(type, data)                            \
+  ({                                                    \
+    ValRef valRef = makeValue(false, sizeof(type));     \
+    DATA(valRef, type) = (data);                        \
+    valRef;                                             \
   })
 
-#define OBJ_VAL(type, data)\
-  ({\
-    ValRef valRef = makeValue(true, sizeof(type));\
-    DATA(valRef , type) = (data);\
-    valRef;\
+#define OBJ_VAL(type, data)                             \
+  ({                                                    \
+    ValRef valRef = makeValue(true, sizeof(type));      \
+    DATA(valRef , type) = (data);                       \
+    valRef;                                             \
   })
 
 // Heap allocate a Value, setting up the ValueHeader and allowing enough space
