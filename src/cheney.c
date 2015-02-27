@@ -34,7 +34,6 @@ void copyChildren(ValRef parentRef) {
 
   ValRef* currentChildPtr = ((void*) parentRef) + sizeof(ValueHeader);
   ValRef* terminalPtr = ((void*) parentRef) + valSize(parentRef);
-  bool currentChildExistsAndIsNotVisited;
 
   while (currentChildPtr != terminalPtr) {
     if (!(*currentChildPtr)) {
