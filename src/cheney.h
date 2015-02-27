@@ -11,4 +11,7 @@ void cheneyCollect(ValRef rootSet[], int length);
 // fromSpace.
 void initCheneyCollect();
 
+// Allocate valRefs on fromSpace and increment pointer to next space.
+ValRef cheneyMalloc(size_t size);
+
 #endif /* CHENEY_H */
