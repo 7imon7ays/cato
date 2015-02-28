@@ -14,7 +14,7 @@ ValueHeader* makeValue(bool isObject, size_t length) {
   valRef->wasVisited = false;
 
   return valRef;
-};
+}
 
 void* data(ValRef valRef) {
   return ((void *) valRef) + sizeof(ValueHeader);

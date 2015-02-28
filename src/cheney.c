@@ -35,7 +35,6 @@ void copyChildren(ValRef parentRef) {
 
   ValRef* currentChildPtr = ((void*) parentRef) + sizeof(ValueHeader);
   ValRef* terminalPtr = ((void*) parentRef) + valSize(parentRef);
-  bool currentChildExistsAndIsNotVisited;
 
   while (currentChildPtr != terminalPtr) {
     if (!(*currentChildPtr)) {
@@ -75,7 +74,7 @@ void cheneyCollect(ValRef rootSet[], int length) {
 
   ValRef temp = toSpace;
   toSpace = fromSpace;
-  fromSpace = toSpace;
+  fromSpace = temp;
 }
 
 ValRef cheneyMalloc(size_t size) {
