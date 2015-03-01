@@ -60,14 +60,14 @@ void initCheneyCollect() {
   currentStackPos = rootSetStack;
 }
 
-void cheneyCollect(ValRef rootSet[], int length) {
+void cheneyCollect(ValRef* rootSet[], int length) {
   // Reset current position to the start of toSpace; increment it as values are
   // copied over.
   currentHeapPos = toSpace;
   ValRef currentValRef = currentHeapPos;
 
   for (int i = 0; i < length; i++) {
-    rootSet[i] = copyVal(rootSet[i]);
+    *rootSet[i] = copyVal(*(rootSet[i]));
   }
 
   while (currentValRef != currentHeapPos) {
