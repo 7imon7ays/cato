@@ -6,8 +6,6 @@
 #include <stdlib.h>
 
 typedef struct ValueHeader {
-  // Where to find the copied value after it was moved
-  struct ValueHeader* newPosition;
   // How many bytes of data are stored after isObject.
   size_t length;
   // Data is object or primitive.
@@ -39,7 +37,12 @@ typedef ValueHeader* ValRef;
 
 // Heap allocate a Value, setting up the ValueHeader and allowing enough space
 // for the content.
-ValueHeader* makeValue(bool isObject, size_t length);
+ValRef makeValue(bool isObject, size_t length);
+
+// Find the copied value after it was moved; return NULL if it wasn't
+ValRef forwardingPointer(ValRef valRef);
+
+void setForwardingPointer(ValRef valRef, ValRef newRef);
 
 // Values are type-puns. Their size is sizeof ValueHeader + the length declared
 // in their header (lenght is implicitely multiplied by the size of a pointer).

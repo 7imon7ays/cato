@@ -17,11 +17,8 @@ ValRef copyVal(ValRef valRef) {
   size_t numBytes = valSize(valRef);
   memcpy(currentPos, valRef, numBytes);
 
-  currentPos->wasVisited = false;
-  valRef->wasVisited = true;
-
   ValRef newValRef = currentPos;
-  valRef->newPosition = newValRef;
+  setForwardingPointer(valRef, newValRef);
   currentPos = nextValRef(currentPos);
 
   return newValRef;
@@ -33,21 +30,21 @@ void copyChildren(ValRef parentRef) {
     return;
   }
 
-  ValRef* currentChildPtr = ((void*) parentRef) + sizeof(ValueHeader);
-  ValRef* terminalPtr = ((void*) parentRef) + valSize(parentRef);
+  // Point to the value's data and iterate over it as an array of ValRefs.
+  // Its length is the size of the parent's data divided by size of a ValRef.
+  ValRef* children = &(DATA(parentRef, ValRef));
+  int numChildren = parentRef->length / sizeof(ValRef);
 
-  while (currentChildPtr != terminalPtr) {
-    if (!(*currentChildPtr)) {
+  for (int i = 0; i < numChildren; i++) {
+    if (!(children[i])) {
       // Skip pointer to null
-    } else if (!(*currentChildPtr)->wasVisited) {
+    } else if (!(children[i])->wasVisited) {
       // Copy the child and update its reference.
-      *currentChildPtr = copyVal(*currentChildPtr);
+      children[i] = copyVal(children[i]);
     } else {
       // Update the reference to the child if it was moved.
-      *currentChildPtr = (*currentChildPtr)->newPosition;
+      children[i] = forwardingPointer(children[i]);
     }
-
-    currentChildPtr++;
   }
 }
 

@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "value.h"
@@ -16,8 +17,14 @@ ValueHeader* makeValue(bool isObject, size_t length) {
   return valRef;
 }
 
-void* data(ValRef valRef) {
-  return ((void *) valRef) + sizeof(ValueHeader);
+ValRef forwardingPointer(ValRef valRef) {
+  return (valRef->wasVisited ? DATA(valRef, ValRef) : NULL);
+}
+
+void setForwardingPointer(ValRef valRef, ValRef newRef) {
+  assert(!valRef->wasVisited);
+  valRef->wasVisited = true;
+  DATA(valRef, ValRef) = newRef;
 }
 
 size_t valSize(ValRef valRef) {
