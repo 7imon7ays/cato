@@ -6,20 +6,24 @@
 #include "vertex.h"
 
 #define HEAP_SIZE 8000000
+#define STACK_SIZE 1000000
 
-ValRef toSpace = 0;
-ValRef fromSpace = 0;
-ValRef currentPos = 0;
+ValRef toSpace = NULL;
+ValRef fromSpace = NULL;
+ValRef currentHeapPos = NULL;
+void* rootSetStack = NULL;
+void* currentStackPos = NULL;
+int currentFrameSize = 0;
 
 // Copy a val to the toSpace and increment the new space pointer by the size of
 // that val (header size + data length). Return the val's new position.
 ValRef copyVal(ValRef valRef) {
   size_t numBytes = valSize(valRef);
-  memcpy(currentPos, valRef, numBytes);
+  memcpy(currentHeapPos, valRef, numBytes);
 
-  ValRef newValRef = currentPos;
+  ValRef newValRef = currentHeapPos;
   setForwardingPointer(valRef, newValRef);
-  currentPos = nextValRef(currentPos);
+  currentHeapPos = nextValRef(currentHeapPos);
 
   return newValRef;
 }
@@ -51,20 +55,22 @@ void copyChildren(ValRef parentRef) {
 void initCheneyCollect() {
   toSpace = malloc(HEAP_SIZE);
   fromSpace = malloc(HEAP_SIZE);
-  currentPos = fromSpace;
+  rootSetStack = malloc(STACK_SIZE);
+  currentHeapPos = fromSpace;
+  currentStackPos = rootSetStack;
 }
 
 void cheneyCollect(ValRef rootSet[], int length) {
   // Reset current position to the start of toSpace; increment it as values are
   // copied over.
-  currentPos = toSpace;
-  ValRef currentValRef = currentPos;
+  currentHeapPos = toSpace;
+  ValRef currentValRef = currentHeapPos;
 
   for (int i = 0; i < length; i++) {
     rootSet[i] = copyVal(rootSet[i]);
   }
 
-  while (currentValRef != currentPos) {
+  while (currentValRef != currentHeapPos) {
     copyChildren(currentValRef);
     currentValRef = nextValRef(currentValRef);
   }
@@ -74,16 +80,34 @@ void cheneyCollect(ValRef rootSet[], int length) {
   fromSpace = temp;
 }
 
+void pushFrame() {
+  *((int *) currentStackPos) = currentFrameSize;
+  currentStackPos += sizeof(int);
+  currentFrameSize = 0;
+}
+
+void pushValRef(ValRef* valRefPtr) {
+  *((ValRef **) currentStackPos) = valRefPtr;
+  currentStackPos += sizeof(ValRef *);
+  currentFrameSize++;
+}
+
+void popFrame() {
+  currentStackPos -= currentFrameSize * sizeof(ValRef *);
+  currentStackPos -= sizeof(int);
+  currentFrameSize = *((int *) currentStackPos);
+}
+
 ValRef cheneyMalloc(size_t size) {
-  void* newBufferPosition = ((void *) currentPos) + size;
+  void* newBufferPosition = ((void *) currentHeapPos) + size;
   void* heapLimit = ((void *) fromSpace) + HEAP_SIZE;
   // Exit for now when fromSpace runs out.
   if (newBufferPosition > heapLimit) {
     exit(1);
   }
 
-  ValRef valRef = currentPos;
-  currentPos = ((void *) currentPos) + size;
+  ValRef valRef = currentHeapPos;
+  currentHeapPos = ((void *) currentHeapPos) + size;
 
   return valRef;
 }
