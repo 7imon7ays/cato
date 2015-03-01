@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "cheney.h"
 #include "value.h"
 
 ValueHeader* makeValue(bool isObject, size_t length) {
@@ -9,7 +10,7 @@ ValueHeader* makeValue(bool isObject, size_t length) {
   size_t alignmentReq = __alignof(ValueHeader);
   length = ((length + alignmentReq - 1) / alignmentReq) * alignmentReq;
 
-  ValueHeader* valRef = malloc(sizeof(ValueHeader) + length);
+  ValueHeader* valRef = cheneyMalloc(sizeof(ValueHeader) + length);
   valRef->isObject = isObject;
   valRef->length = length;
   valRef->wasVisited = false;
