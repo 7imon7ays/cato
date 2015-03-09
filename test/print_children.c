@@ -6,25 +6,25 @@
 int main() {
   initCheneyCollect();
 
-  ValRef c = OBJ_VAL(Vertex, ((Vertex) {
+  OBJ_VAR(Vertex, c, ((Vertex) {
         .content = PRIM_VAL(char, 'c'),
         .left = NULL,
         .right = NULL
       }));
 
-  ValRef b = OBJ_VAL(Vertex, ((Vertex) {
+  OBJ_VAR(Vertex, b, ((Vertex) {
         .content = PRIM_VAL(char, 'b'),
         .left = c,
         .right = NULL
       }));
 
-  ValRef a = OBJ_VAL(Vertex, ((Vertex) {
+  OBJ_VAR(Vertex, a, ((Vertex) {
         .content = PRIM_VAL(char, 'a'),
         .left = NULL,
         .right = c
       }));
 
-  ValRef root = OBJ_VAL(Vertex, ((Vertex) {
+  OBJ_VAR(Vertex, root, ((Vertex) {
         .content = PRIM_VAL(char, 'r'),
         .left = b,
         .right = a

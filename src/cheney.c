@@ -11,9 +11,13 @@
 ValRef toSpace = NULL;
 ValRef fromSpace = NULL;
 ValRef currentHeapPos = NULL;
+
+// Track the root set in a virtual stack. This stack contains two kinds of
+// values: pointers to the stack's valRefs and each frame's size inside of
+// itself.
 void* rootSetStack = NULL;
 void* currentStackPos = NULL;
-int currentFrameSize = 0;
+size_t currentFrameSize = 0;
 
 // Copy a val to the toSpace and increment the new space pointer by the size of
 // that val (header size + data length). Return the val's new position.
@@ -66,6 +70,8 @@ void cheneyCollect(ValRef* rootSet[], int length) {
   currentHeapPos = toSpace;
   ValRef currentValRef = currentHeapPos;
 
+  // TODO: What if the same ValRef address appears multiple times in the root
+  // set?
   for (int i = 0; i < length; i++) {
     *rootSet[i] = copyVal(*(rootSet[i]));
   }
@@ -80,22 +86,28 @@ void cheneyCollect(ValRef* rootSet[], int length) {
   fromSpace = temp;
 }
 
+// Record the current frame size and reset its value to 0.
 void pushFrame() {
+  assert(currentStackPos + sizeof(size_t) <= rootSetStack + STACK_SIZE);
   *((int *) currentStackPos) = currentFrameSize;
-  currentStackPos += sizeof(int);
+  currentStackPos += sizeof(size_t);
   currentFrameSize = 0;
 }
 
 void pushValRef(ValRef* valRefPtr) {
+  assert(currentStackPos + sizeof(ValRef *) <= rootSetStack + STACK_SIZE);
   *((ValRef **) currentStackPos) = valRefPtr;
   currentStackPos += sizeof(ValRef *);
   currentFrameSize++;
 }
 
+// Decrement the stack pointer by the number of valRefs in the current frame.
+// The int at its new position is both the size of the previous frame, and
+// where we want to push the next valRefs.
 void popFrame() {
   currentStackPos -= currentFrameSize * sizeof(ValRef *);
-  currentStackPos -= sizeof(int);
-  currentFrameSize = *((int *) currentStackPos);
+  currentStackPos -= sizeof(size_t);
+  currentFrameSize = *((size_t *) currentStackPos);
 }
 
 ValRef cheneyMalloc(size_t size) {

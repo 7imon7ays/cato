@@ -35,6 +35,14 @@ typedef ValueHeader* ValRef;
     valRef;\
   })
 
+#define PRIM_VAR(type, identifier, data)\
+  ValRef identifier = PRIM_VAL(type, (data));\
+  pushValRef(&(identifier));
+
+#define OBJ_VAR(type, identifier, data)\
+  ValRef identifier = OBJ_VAL(type, (data));\
+  pushValRef(&(identifier));
+
 // Heap allocate a Value, setting up the ValueHeader and allowing enough space
 // for the content.
 ValRef makeValue(bool isObject, size_t length);
