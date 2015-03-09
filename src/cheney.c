@@ -64,18 +64,44 @@ void initCheneyCollect() {
   currentStackPos = rootSetStack;
 }
 
-void cheneyCollect(ValRef* rootSet[], int length) {
+void copyStackValues() {
+  void* thisStackPos = (void *) currentStackPos;
+  size_t thisFrameSize = currentFrameSize;
+
+  while (true) {
+    thisStackPos -= thisFrameSize * sizeof(ValRef*);
+    printf("%p\n", thisStackPos);
+    printf("%d\n", thisFrameSize);
+
+    for (size_t i = 0; i < thisFrameSize; i++) {
+      ValRef* valRefPtr = ((ValRef *) thisStackPos) + i;
+      printf("%p\n", valRefPtr);
+      printf("%p\n", *valRefPtr);
+      // If valRef was visited, update the new address. Otherwise, copy the
+      // value.
+      if ((*valRefPtr)->wasVisited) {
+        *valRefPtr = forwardingPointer(*valRefPtr);
+      } else {
+        *valRefPtr = copyVal(*valRefPtr);
+      }
+    }
+
+    thisStackPos -= sizeof(size_t);
+    if (thisStackPos < rootSetStack) break;
+    thisFrameSize = *((size_t *) thisStackPos);
+  }
+}
+
+void cheneyCollect() {
   // Reset current position to the start of toSpace; increment it as values are
   // copied over.
   currentHeapPos = toSpace;
-  ValRef currentValRef = currentHeapPos;
 
-  // TODO: What if the same ValRef address appears multiple times in the root
-  // set?
-  for (int i = 0; i < length; i++) {
-    *rootSet[i] = copyVal(*(rootSet[i]));
-  }
+  copyStackValues();
 
+  // Keep pointer to valRef whose children (if any) are being copied to
+  // toSpace.
+  ValRef currentValRef = toSpace;
   while (currentValRef != currentHeapPos) {
     copyChildren(currentValRef);
     currentValRef = nextValRef(currentValRef);
@@ -115,11 +141,16 @@ ValRef cheneyMalloc(size_t size) {
   void* heapLimit = ((void *) fromSpace) + HEAP_SIZE;
   // Exit for now when fromSpace runs out.
   if (newBufferPosition > heapLimit) {
-    exit(1);
+    cheneyCollect();
+    newBufferPosition = ((void *) currentHeapPos) + size;
+    heapLimit = ((void *) fromSpace) + HEAP_SIZE;
+    if (newBufferPosition > heapLimit) {
+      exit(1);
+    }
   }
 
   ValRef valRef = currentHeapPos;
-  currentHeapPos = ((void *) currentHeapPos) + size;
+  currentHeapPos = newBufferPosition;
 
   return valRef;
 }

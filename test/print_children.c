@@ -33,8 +33,7 @@ int main() {
   // Create a cycle in the graph to test that child values are only copied
   // once.
   DATA(c, Vertex).left = root;
-  ValRef* rootAddress = &root;
-  cheneyCollect(&rootAddress, 1);
+  cheneyCollect();
 
   return 0;
 }
