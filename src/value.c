@@ -6,7 +6,7 @@
 
 ValueRef makeValue(bool isObject, size_t length) {
   // Round up the length to multiple of ValueHeader's alignment
-  // requirement i.e. 8
+  // requirement, i.e. 8.
   size_t alignmentReq = __alignof(ValueHeader);
   length = ((length + alignmentReq - 1) / alignmentReq) * alignmentReq;
 

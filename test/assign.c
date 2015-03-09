@@ -3,7 +3,7 @@
 #include "../src/vertex.h"
 
 int main() {
-  // Init four vertices with char as content
+  // Init four vertices with char as content.
   ValRef aVertex = OBJ_VAL(Vertex, (Vertex) {
     .content = PRIM_VAL(char, 'a')
   });

@@ -47,13 +47,13 @@ typedef ValueHeader* ValRef;
 // enough space for the content.
 ValRef makeValue(bool isObject, size_t length);
 
-// Find the copied value after it was moved; return NULL if it wasn't
+// Find the copied value after it was moved; return NULL if it wasn't.
 ValRef forwardingPointer(ValRef valRef);
 
 void setForwardingPointer(ValRef valRef, ValRef newRef);
 
 // Values are type-puns. Their size is sizeof ValueHeader + the length
-// declared in their header (lenght is implicitely multiplied by the
+// declared in their header (lenght is implicitly multiplied by the
 // size of a pointer).
 size_t valSize(ValRef valRef);
 
