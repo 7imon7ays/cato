@@ -25,4 +25,3 @@ void popFrame();
 ValRef cheneyMalloc(size_t size);
 
 #endif /* CHENEY_H */
-

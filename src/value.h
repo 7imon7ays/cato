@@ -60,4 +60,3 @@ size_t valSize(ValRef valRef);
 ValRef nextValRef(ValRef valRef);
 
 #endif /* VALUE_H */
-

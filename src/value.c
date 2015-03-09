@@ -35,4 +35,3 @@ size_t valSize(ValRef valRef) {
 ValRef nextValRef(ValRef valRef) {
   return ((ValRef) ((void *) valRef) + valSize(valRef));
 }
-

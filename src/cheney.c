@@ -154,4 +154,3 @@ ValRef cheneyMalloc(size_t size) {
 
   return valRef;
 }
-
