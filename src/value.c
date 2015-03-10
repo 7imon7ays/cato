@@ -4,13 +4,13 @@
 #include "cheney.h"
 #include "value.h"
 
-ValueRef makeValue(bool isObject, size_t length) {
+ValRef makeValue(bool isObject, size_t length) {
   // Round up the length to multiple of ValueHeader's alignment
   // requirement, i.e. 8.
   size_t alignmentReq = __alignof(ValueHeader);
   length = ((length + alignmentReq - 1) / alignmentReq) * alignmentReq;
 
-  ValueRef valRef = cheneyMalloc(sizeof(ValueHeader) + length);
+  ValRef valRef = cheneyMalloc(sizeof(ValueHeader) + length);
   valRef->isObject = isObject;
   valRef->length = length;
   valRef->wasVisited = false;
