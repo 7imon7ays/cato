@@ -12,4 +12,3 @@ typedef struct vertex {
 void assertVertexContent(ValRef vertex, char expectedPrimitive);
 
 #endif /* VERTEX_H */
-

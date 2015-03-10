@@ -12,15 +12,16 @@ ValRef toSpace = NULL;
 ValRef fromSpace = NULL;
 ValRef currentHeapPos = NULL;
 
-// Track the root set in a virtual stack. This stack contains two kinds of
-// values: pointers to the stack's valRefs and each frame's size inside of
-// itself.
+// Track the root set in a virtual stack. This stack contains two
+// kinds of values: pointers to the stack's valRefs and each frame's
+// size inside of itself.
 void* rootSetStack = NULL;
 void* currentStackPos = NULL;
 size_t currentFrameSize = 0;
 
-// Copy a val to the toSpace and increment the new space pointer by the size of
-// that val (header size + data length). Return the val's new position.
+// Copy a val to the toSpace and increment the new space pointer by
+// the size of that val (header size + data length). Return the val's
+// new position.
 ValRef copyVal(ValRef valRef) {
   size_t numBytes = valSize(valRef);
   memcpy(currentHeapPos, valRef, numBytes);
@@ -38,8 +39,9 @@ void copyChildren(ValRef parentRef) {
     return;
   }
 
-  // Point to the value's data and iterate over it as an array of ValRefs.
-  // Its length is the size of the parent's data divided by size of a ValRef.
+  // Point to the value's data and iterate over it as an array of
+  // ValRefs. Its length is the size of the parent's data divided by
+  // size of a ValRef.
   ValRef* children = &(DATA(parentRef, ValRef));
   int numChildren = parentRef->length / sizeof(ValRef);
 
@@ -77,8 +79,8 @@ void copyStackValues() {
       ValRef* valRefPtr = ((ValRef *) thisStackPos) + i;
       printf("%p\n", valRefPtr);
       printf("%p\n", *valRefPtr);
-      // If valRef was visited, update the new address. Otherwise, copy the
-      // value.
+      // If valRef was visited, update the new address. Otherwise,
+      // copy the value.
       if ((*valRefPtr)->wasVisited) {
         *valRefPtr = forwardingPointer(*valRefPtr);
       } else {
@@ -93,14 +95,14 @@ void copyStackValues() {
 }
 
 void cheneyCollect() {
-  // Reset current position to the start of toSpace; increment it as values are
-  // copied over.
+  // Reset current position to the start of toSpace; increment it as
+  // values are copied over.
   currentHeapPos = toSpace;
 
   copyStackValues();
 
-  // Keep pointer to valRef whose children (if any) are being copied to
-  // toSpace.
+  // Keep pointer to valRef whose children (if any) are being copied
+  // to toSpace.
   ValRef currentValRef = toSpace;
   while (currentValRef != currentHeapPos) {
     copyChildren(currentValRef);
@@ -127,9 +129,9 @@ void pushValRef(ValRef* valRefPtr) {
   currentFrameSize++;
 }
 
-// Decrement the stack pointer by the number of valRefs in the current frame.
-// The int at its new position is both the size of the previous frame, and
-// where we want to push the next valRefs.
+// Decrement the stack pointer by the number of valRefs in the current
+// frame.  The int at its new position is both the size of the
+// previous frame, and where we want to push the next valRefs.
 void popFrame() {
   currentStackPos -= currentFrameSize * sizeof(ValRef *);
   currentStackPos -= sizeof(size_t);
@@ -154,4 +156,3 @@ ValRef cheneyMalloc(size_t size) {
 
   return valRef;
 }
-
