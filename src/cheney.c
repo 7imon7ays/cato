@@ -96,6 +96,7 @@ void copyStackValues() {
 }
 
 void cheneyCollect() {
+  printf("Garbarge delenda est.\n");
   initCheney();
   // Reset current position to the start of toSpace; increment it as values are
   // copied over.
