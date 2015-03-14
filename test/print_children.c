@@ -4,8 +4,6 @@
 #include "../src/vertex.h"
 
 int main() {
-  initCheneyCollect();
-
   OBJ_VAR(Vertex, c, ((Vertex) {
         .content = PRIM_VAL(char, 'c'),
         .left = NULL,

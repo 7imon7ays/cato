@@ -31,7 +31,7 @@ typedef ValueHeader* ValRef;
 #define OBJ_VAL(type, data)\
   ({\
     ValRef valRef = makeValue(true, sizeof(type));\
-    DATA(valRef , type) = (data);\
+    DATA(valRef, type) = (data);\
     valRef;\
   })
 

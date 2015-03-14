@@ -8,9 +8,6 @@
 // objects they refer to directly or indirectly.
 void cheneyCollect();
 
-// Allocate toSpace, fromSpace, and a pointer to the start of fromSpace.
-void initCheneyCollect();
-
 // Record previous frame size and init with frame of size 0.
 void pushFrame();
 

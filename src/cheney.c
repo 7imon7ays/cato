@@ -56,7 +56,14 @@ void copyChildren(ValRef parentRef) {
   }
 }
 
-void initCheneyCollect() {
+// Allocate toSpace, fromSpace, and a pointer to the start of fromSpace.
+// Call this in every function that refers to these values but skip if cheney
+// collect has already been initialized.
+void initCheney() {
+  if (toSpace) {
+    return;
+  }
+
   toSpace = malloc(HEAP_SIZE);
   fromSpace = malloc(HEAP_SIZE);
   rootSetStack = malloc(STACK_SIZE);
@@ -89,6 +96,7 @@ void copyStackValues() {
 }
 
 void cheneyCollect() {
+  initCheney();
   // Reset current position to the start of toSpace; increment it as values are
   // copied over.
   currentHeapPos = toSpace;
@@ -110,6 +118,7 @@ void cheneyCollect() {
 
 // Record the current frame size and reset its value to 0.
 void pushFrame() {
+  initCheney();
   assert(currentStackPos + sizeof(size_t) <= rootSetStack + STACK_SIZE);
   *((int*) currentStackPos) = currentFrameSize;
   currentStackPos += sizeof(size_t);
@@ -117,6 +126,7 @@ void pushFrame() {
 }
 
 void pushValRef(ValRef* valRefPtr) {
+  initCheney();
   assert(currentStackPos + sizeof(ValRef *) <= rootSetStack + STACK_SIZE);
   *((ValRef **) currentStackPos) = valRefPtr;
   currentStackPos += sizeof(ValRef *);
@@ -127,12 +137,18 @@ void pushValRef(ValRef* valRefPtr) {
 // The int at its new position is both the size of the previous frame, and
 // where we want to push the next valRefs.
 void popFrame() {
+  initCheney();
+
   currentStackPos -= currentFrameSize * sizeof(ValRef *);
+  // Stack underflow if we've already reached the base of the stack.
+  assert(currentStackPos != rootSetStack);
   currentStackPos -= sizeof(size_t);
+
   currentFrameSize = *((size_t*) currentStackPos);
 }
 
 ValRef cheneyMalloc(size_t size) {
+  initCheney();
   void* newBufferPosition = ((void*) currentHeapPos) + size;
   void* heapLimit = ((void*) fromSpace) + HEAP_SIZE;
   // Exit for now when fromSpace runs out.
