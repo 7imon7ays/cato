@@ -13,8 +13,8 @@ ValRef fromSpace = NULL;
 ValRef currentHeapPos = NULL;
 
 // Track the root set in a virtual stack. This stack contains two kinds of
-// values: pointers to the stack's valRefs and each frame's size inside of
-// itself.
+// values; pointers to the stack's valRefs and, inside each frame, that frame's
+// size.
 void* rootSetStack = NULL;
 void* currentStackPos = NULL;
 size_t currentFrameSize = 0;
@@ -70,13 +70,9 @@ void copyStackValues() {
 
   while (true) {
     thisStackPos -= thisFrameSize * sizeof(ValRef*);
-    printf("%p\n", thisStackPos);
-    printf("%d\n", thisFrameSize);
 
     for (size_t i = 0; i < thisFrameSize; i++) {
-      ValRef* valRefPtr = ((ValRef *) thisStackPos) + i;
-      printf("%p\n", valRefPtr);
-      printf("%p\n", *valRefPtr);
+      ValRef* valRefPtr = *(((ValRef**) thisStackPos) + i);
       // If valRef was visited, update the new address. Otherwise, copy the
       // value.
       if ((*valRefPtr)->wasVisited) {
@@ -88,7 +84,7 @@ void copyStackValues() {
 
     thisStackPos -= sizeof(size_t);
     if (thisStackPos < rootSetStack) break;
-    thisFrameSize = *((size_t *) thisStackPos);
+    thisFrameSize = *((size_t*) thisStackPos);
   }
 }
 
@@ -115,7 +111,7 @@ void cheneyCollect() {
 // Record the current frame size and reset its value to 0.
 void pushFrame() {
   assert(currentStackPos + sizeof(size_t) <= rootSetStack + STACK_SIZE);
-  *((int *) currentStackPos) = currentFrameSize;
+  *((int*) currentStackPos) = currentFrameSize;
   currentStackPos += sizeof(size_t);
   currentFrameSize = 0;
 }
@@ -133,17 +129,17 @@ void pushValRef(ValRef* valRefPtr) {
 void popFrame() {
   currentStackPos -= currentFrameSize * sizeof(ValRef *);
   currentStackPos -= sizeof(size_t);
-  currentFrameSize = *((size_t *) currentStackPos);
+  currentFrameSize = *((size_t*) currentStackPos);
 }
 
 ValRef cheneyMalloc(size_t size) {
-  void* newBufferPosition = ((void *) currentHeapPos) + size;
-  void* heapLimit = ((void *) fromSpace) + HEAP_SIZE;
+  void* newBufferPosition = ((void*) currentHeapPos) + size;
+  void* heapLimit = ((void*) fromSpace) + HEAP_SIZE;
   // Exit for now when fromSpace runs out.
   if (newBufferPosition > heapLimit) {
     cheneyCollect();
-    newBufferPosition = ((void *) currentHeapPos) + size;
-    heapLimit = ((void *) fromSpace) + HEAP_SIZE;
+    newBufferPosition = ((void*) currentHeapPos) + size;
+    heapLimit = ((void*) fromSpace) + HEAP_SIZE;
     if (newBufferPosition > heapLimit) {
       exit(1);
     }
