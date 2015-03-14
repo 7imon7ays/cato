@@ -34,6 +34,7 @@ ValRef copyVal(ValRef valRef) {
 
 void copyChildren(ValRef parentRef) {
   if (!parentRef->isObject) {
+    // For debugging and testing.
     printf("reached leaf %c\n", DATA(parentRef, char));
     return;
   }
