@@ -35,13 +35,13 @@ ValRef copyVal(ValRef valRef) {
 void copyChildren(ValRef parentRef) {
   if (!parentRef->isObject) {
     // For debugging and testing.
-    printf("reached leaf %c\n", DATA(parentRef, char));
+    printf("reached leaf %c\n", DATA(char, parentRef));
     return;
   }
 
   // Point to the value's data and iterate over it as an array of ValRefs.
   // Its length is the size of the parent's data divided by size of a ValRef.
-  ValRef* children = &(DATA(parentRef, ValRef));
+  ValRef* children = &(DATA(ValRef, parentRef));
   int numChildren = parentRef->length / sizeof(ValRef);
 
   for (int i = 0; i < numChildren; i++) {

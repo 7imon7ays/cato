@@ -16,7 +16,7 @@ typedef struct ValueHeader {
 typedef ValueHeader* ValRef;
 
 // Access a value header's data and cast it to a given type.
-#define DATA(valRef, type)\
+#define DATA(type, valRef)\
   (*((type*) (((void *) valRef) + sizeof(ValueHeader))))
 
 // Initialize and access a value in the same call, using an arbitrary lexical
@@ -24,14 +24,14 @@ typedef ValueHeader* ValRef;
 #define PRIM_VAL(type, data)\
   ({\
     ValRef valRef = makeValue(false, sizeof(type));\
-    DATA(valRef, type) = (data);\
+    DATA(type, valRef) = (data);\
     valRef;\
   })
 
 #define OBJ_VAL(type, data)\
   ({\
     ValRef valRef = makeValue(true, sizeof(type));\
-    DATA(valRef, type) = (data);\
+    DATA(type, valRef) = (data);\
     valRef;\
   })
 

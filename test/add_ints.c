@@ -6,9 +6,9 @@ int main() {
   ValRef threeVal = PRIM_VAL(int, 3);
   ValRef sumVal = PRIM_VAL(int, 0);
 
-  DATA(sumVal, int) = DATA(twoVal, int) + DATA(threeVal, int);
+  DATA(int, sumVal) = DATA(int, twoVal) + DATA(int, threeVal);
 
-  assert(DATA(sumVal, int) == 5);
+  assert(DATA(int, sumVal) == 5);
   return 0;
 }
 

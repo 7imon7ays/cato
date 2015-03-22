@@ -14,7 +14,7 @@ int main() {
     popFrame();
   }
 
-  assert(DATA(myVar, char) == 'a');
+  assert(DATA(char, myVar) == 'a');
   popFrame();
 
   return 0;

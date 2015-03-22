@@ -19,13 +19,13 @@ ValueHeader* makeValue(bool isObject, size_t length) {
 }
 
 ValRef forwardingPointer(ValRef valRef) {
-  return (valRef->wasVisited ? DATA(valRef, ValRef) : NULL);
+  return (valRef->wasVisited ? DATA(ValRef, valRef) : NULL);
 }
 
 void setForwardingPointer(ValRef valRef, ValRef newRef) {
   assert(!valRef->wasVisited);
   valRef->wasVisited = true;
-  DATA(valRef, ValRef) = newRef;
+  DATA(ValRef, valRef) = newRef;
 }
 
 size_t valSize(ValRef valRef) {

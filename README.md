@@ -57,7 +57,7 @@ Accessing the value inside a variable also requires a macro, like so:
 
 ```c
     PRIM_VAR(char, myVar, 'b');
-    'b' == DATA(myVar, char); // => true
+    'b' == DATA(char, myVar); // => true
 ```
 
 ## Cato's Values
