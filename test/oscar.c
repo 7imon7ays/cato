@@ -5,6 +5,7 @@
 /* Oscar: create a lot of garbage */
 
 int main() {
+  pushFrame();
   PRIM_VAR(char, myVar, 'a');
 
   for (int i = 0; i < 100000000; i++) {
@@ -14,6 +15,7 @@ int main() {
   }
 
   assert(DATA(myVar, char) == 'a');
+  popFrame();
 
   return 0;
 }
